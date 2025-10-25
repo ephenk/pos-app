@@ -50,7 +50,7 @@ export default function POSPage() {
     <main className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
       {!confirmed ? (
         <div className="w-full max-w-2xl bg-white p-6 rounded-2xl shadow">
-          <h1 className="text-2xl font-bold mb-4 text-center">NISHI IZAKAYA</h1>
+          <h1 className="text-3xl font-bold mb-4 text-center text-black">NISHI IZAKAYA</h1>
           <div className="divide-y">
             {items.map((item) => (
               <div
@@ -58,7 +58,7 @@ export default function POSPage() {
                 className="flex items-center justify-between py-3"
               >
                 <div>
-                  <p className="font-medium">{item.name}</p>
+                  <p className="font-medium text-black">{item.name}</p>
                   <p className="text-sm text-gray-500">
                     Rp {item.price.toLocaleString()}
                   </p>
@@ -66,14 +66,16 @@ export default function POSPage() {
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     <button
-                      className="p-2 bg-gray-200 rounded-full hover:bg-gray-300"
+                      className="p-2 bg-gray-600 rounded-full hover:bg-black"
                       onClick={() => handleChange(item.name, -1, item.maxQty)}
                     >
                       <Minus size={16} />
                     </button>
-                    <span className="w-6 text-center">{quantities[item.name] || 0}</span>
+                    <span className="w-6 text-center text-black">
+                      {quantities[item.name] || 0}
+                    </span>
                     <button
-                      className="p-2 bg-gray-200 rounded-full hover:bg-gray-300"
+                      className="p-2 bg-gray-600 rounded-full hover:bg-black"
                       onClick={() => handleChange(item.name, 1, item.maxQty)}
                     >
                       <Plus size={16} />
@@ -86,18 +88,18 @@ export default function POSPage() {
           </div>
 
           {/* Totals */}
-          <div className="mt-6 border-t pt-4 space-y-1 text-right">
+          <div className="mt-6 border-t pt-4 space-y-1 text-right text-black">
             <p>
-              Subtotal: <span className="font-semibold">Rp {subtotal.toLocaleString()}</span>
+              Subtotal: <span className="text-xl">Rp {subtotal.toLocaleString()}</span>
             </p>
             <p>
-              Service (7.5%): <span className="font-semibold">Rp {serviceCharge.toLocaleString()}</span>
+              Service (7.5%): <span className="text-xl">Rp {serviceCharge.toLocaleString()}</span>
             </p>
             <p>
-              Tax (10%): <span className="font-semibold">Rp {tax.toLocaleString()}</span>
+              Tax (10%): <span className="text-xl">Rp {tax.toLocaleString()}</span>
             </p>
             <hr className="my-2" />
-            <p className="text-lg font-bold">
+            <p className="text-xl font-bold">
               Grand Total: Rp {grandTotal.toLocaleString()}
             </p>
           </div>
@@ -111,10 +113,7 @@ export default function POSPage() {
         </div>
       ) : (
         <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow text-center">
-          <h2 className="text-3xl font-bold mb-6">
-            Grand Total
-          </h2>
-          <h2 className="text-3xl font-bold mb-6">
+          <h2 className="text-3xl font-bold mb-6 text-black">
             Rp {grandTotal.toLocaleString()}
           </h2>
           <div className="flex justify-center mb-4">
@@ -125,8 +124,8 @@ export default function POSPage() {
               height={80}
             />
           </div>
-          <p className="text-lg font-medium">a/n Stephen Hadisurja</p>
-          <p className="text-xl font-bold tracking-wide">5270695258</p>
+          <p className="text-lg font-medium text-black">a/n Stephen Hadisurja</p>
+          <p className="text-xl font-bold tracking-wide text-black">5270695258</p>
 
           <button
             className="mt-6 text-sm text-blue-600 underline"
