@@ -43,7 +43,7 @@ export default function POSPage() {
     0
   );
   const serviceCharge = subtotal * 0.075;
-  const tax = subtotal * 0.1;
+  const tax = (subtotal + serviceCharge) * 0.1;
   const grandTotal = subtotal + serviceCharge + tax;
 
   return (
@@ -66,7 +66,7 @@ export default function POSPage() {
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     <button
-                      className="p-2 bg-gray-600 rounded-full hover:bg-black"
+                      className="p-2 bg-teal-500 rounded-full hover:bg-teal-600"
                       onClick={() => handleChange(item.name, -1, item.maxQty)}
                     >
                       <Minus size={16} />
@@ -75,13 +75,13 @@ export default function POSPage() {
                       {quantities[item.name] || 0}
                     </span>
                     <button
-                      className="p-2 bg-gray-600 rounded-full hover:bg-black"
+                      className="p-2 bg-teal-500 rounded-full hover:bg-teal-600"
                       onClick={() => handleChange(item.name, 1, item.maxQty)}
                     >
                       <Plus size={16} />
                     </button>
                   </div>
-                  <span className="text-xs text-gray-500 whitespace-nowrap">Max: {item.maxQty}</span>
+                  <span className="text-xs text-red-500 whitespace-nowrap">Max: {item.maxQty}</span>
                 </div>
               </div>
             ))}
