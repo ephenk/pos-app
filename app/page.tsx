@@ -43,7 +43,7 @@ export default function POSPage() {
     0
   );
   const serviceCharge = subtotal * 0.075;
-  const tax = subtotal * 0.1;
+  const tax = (subtotal + serviceCharge) * 0.1;
   const grandTotal = subtotal + serviceCharge + tax;
 
   return (
