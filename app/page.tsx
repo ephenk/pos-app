@@ -11,21 +11,21 @@ type Item = {
 };
 
 const items: Item[] = [
-  { name: 'Spicy Ramen With Kaarage', price: 79000, maxQty: 1 },
-  { name: 'Ocha', price: 18000, maxQty: 3 },
-  { name: 'Beef Katsu Set', price: 99000, maxQty: 1 },
-  { name: 'Age Takoyaki', price: 49000, maxQty: 1 },
-  { name: 'Dragon Roll', price: 55000, maxQty: 1 },
-  { name: 'Triple Salmon Nishi Style Sushi', price: 35000, maxQty: 2 },
-  { name: 'Nishi Signature Ramen', price: 60000, maxQty: 2 },
-  { name: 'Spicy Salmon Gunkan', price: 25000, maxQty: 1 },
-  { name: 'Tuna Mayo Salad Gunkan', price: 20000, maxQty: 1 },
-  { name: 'Aburi Salmon Mentai Sushi', price: 25000, maxQty: 1 },
-  { name: 'Pokka Green Tea', price: 30000, maxQty: 1 },
-  { name: 'Virgin Mojito', price: 45000, maxQty: 1 },
-  { name: 'Cheesy Salmon Roll', price: 60000, maxQty: 1 },
-  { name: 'Tori Karaage', price: 35000, maxQty: 2 },
+  { name: 'Jeruk Murni (Iced)', price: 42000, maxQty: 2 },
+  { name: 'Teh Jawa (Iced)', price: 23000, maxQty: 1 },
+  { name: 'Wedang Angsle', price: 43000, maxQty: 1 },
+  { name: 'Risol Bihun', price: 33000, maxQty: 1 },
+  { name: 'Sate Ayam Ponorogo Daging', price: 89000, maxQty: 8 },
+  { name: 'Nasi Putih', price: 19000, maxQty: 8 },
+  { name: 'Tahu Kipas Udang (4 Pcs)', price: 82000, maxQty: 1 },
+  { name: 'Teh Jawa (Hot)', price: 23000, maxQty: 5 },
+  { name: 'Lime Tea (Hot)', price: 35000, maxQty: 1 },
+  { name: 'Lime Tea (Iced)', price: 35000, maxQty: 1 },
+  { name: 'Nasi Bebek Goreng', price: 95000, maxQty: 1 },
+  { name: 'Teh Poci', price: 45000, maxQty: 1 },
 ];
+
+const roundToTen = (amount: number) => Math.round(amount / 10) * 10;
 
 export default function POSPage() {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
@@ -42,15 +42,15 @@ export default function POSPage() {
     (sum, item) => sum + (quantities[item.name] || 0) * item.price,
     0
   );
-  const serviceCharge = subtotal * 0.075;
-  const tax = (subtotal + serviceCharge) * 0.1;
-  const grandTotal = subtotal + serviceCharge + tax;
+  const gratuity = roundToTen(subtotal * (1 / 22));
+  const tax = roundToTen((subtotal + gratuity) * 0.1);
+  const grandTotal = subtotal + gratuity + tax;
 
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
       {!confirmed ? (
         <div className="w-full max-w-2xl bg-white p-6 rounded-2xl shadow">
-          <h1 className="text-3xl font-bold mb-4 text-center text-black">NISHI IZAKAYA</h1>
+          <h1 className="text-3xl font-bold mb-4 text-center text-black">SATE KHAS SENAYAN MKG</h1>
           <div className="divide-y">
             {items.map((item) => (
               <div
@@ -93,7 +93,7 @@ export default function POSPage() {
               Subtotal: <span className="text-xl">Rp {subtotal.toLocaleString()}</span>
             </p>
             <p>
-              Service (7.5%): <span className="text-xl">Rp {serviceCharge.toLocaleString()}</span>
+              Gratuity: <span className="text-xl">Rp {gratuity.toLocaleString()}</span>
             </p>
             <p>
               Tax (10%): <span className="text-xl">Rp {tax.toLocaleString()}</span>
