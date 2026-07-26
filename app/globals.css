@@ -1,3 +1,13 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* v4 gates `hover:` behind @media (hover: hover). This is a POS app that may
+   run on a touchscreen, so restore v3 behavior for the +/- and Confirm buttons. */
+@custom-variant hover (&:hover);
+
+/* v4 preflight no longer sets cursor:pointer on buttons. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}

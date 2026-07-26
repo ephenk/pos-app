@@ -1,20 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export'
-};
-
-module.exports = {
+  output: "export",
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'upload.wikimedia.org',
-        port: '',
-        pathname: '/wikipedia/**',
-      },
-    ],
+    // The default Image Optimization loader is unsupported under
+    // `output: 'export'`. Remote images are emitted as-is, so `remotePatterns`
+    // is never consulted and is intentionally omitted.
+    unoptimized: true,
   },
-}
+};
 
 export default nextConfig;
