@@ -49,9 +49,9 @@ export default function POSPage() {
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
       {!confirmed ? (
-        <div className="w-full max-w-2xl bg-white p-6 rounded-2xl shadow">
+        <div className="w-full max-w-2xl bg-white p-6 rounded-2xl shadow-sm">
           <h1 className="text-3xl font-bold mb-4 text-center text-black">SATE KHAS SENAYAN MKG</h1>
-          <div className="divide-y">
+          <div className="divide-y divide-gray-200">
             {items.map((item) => (
               <div
                 key={item.name}
@@ -67,6 +67,7 @@ export default function POSPage() {
                   <div className="flex items-center gap-2">
                     <button
                       className="p-2 bg-teal-500 rounded-full hover:bg-teal-600"
+                      aria-label={`Decrease ${item.name}`}
                       onClick={() => handleChange(item.name, -1, item.maxQty)}
                     >
                       <Minus size={16} />
@@ -76,6 +77,7 @@ export default function POSPage() {
                     </span>
                     <button
                       className="p-2 bg-teal-500 rounded-full hover:bg-teal-600"
+                      aria-label={`Increase ${item.name}`}
                       onClick={() => handleChange(item.name, 1, item.maxQty)}
                     >
                       <Plus size={16} />
@@ -88,7 +90,7 @@ export default function POSPage() {
           </div>
 
           {/* Totals */}
-          <div className="mt-6 border-t pt-4 space-y-1 text-right text-black">
+          <div className="mt-6 border-t border-gray-200 pt-4 space-y-1 text-right text-black">
             <p>
               Subtotal: <span className="text-xl">Rp {subtotal.toLocaleString()}</span>
             </p>
@@ -98,7 +100,7 @@ export default function POSPage() {
             <p>
               Tax (10%): <span className="text-xl">Rp {tax.toLocaleString()}</span>
             </p>
-            <hr className="my-2" />
+            <hr className="my-2 border-gray-200" />
             <p className="text-xl font-bold">
               Grand Total: Rp {grandTotal.toLocaleString()}
             </p>
@@ -112,7 +114,7 @@ export default function POSPage() {
           </button>
         </div>
       ) : (
-        <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow text-center">
+        <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-sm text-center">
           <h2 className="text-3xl font-bold mb-6 text-black">
             Rp {grandTotal.toLocaleString()}
           </h2>

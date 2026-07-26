@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# pos-app
 
-## Getting Started
+A single-page bill splitter for Sate Khas Senayan MKG. Tally menu quantities, add
+gratuity and tax, and show BCA transfer details for payment.
 
-First, run the development server:
+Built with Next.js (App Router) and Tailwind CSS, shipped as a static export.
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The whole app lives in [`app/page.tsx`](app/page.tsx) — the menu is a hardcoded
+array at the top of the file, and each item has a `maxQty` the steppers clamp to.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+| Script | Purpose |
+|---|---|
+| `npm run dev` | Development server |
+| `npm run build` | Static export to `out/` |
+| `npm run lint` | ESLint (`next lint` was removed in Next 16) |
+| `npm run typecheck` | `tsc --noEmit` |
 
-To learn more about Next.js, take a look at the following resources:
+## Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Deployed on **Netlify**, which builds from this repo and publishes `out/`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Build command: `npm run build`
+- Publish directory: `out`
 
-## Deploy on Vercel
+`next.config.ts` sets `output: 'export'` for the static build and
+`images.unoptimized: true`, which is required because the default Image
+Optimization loader is unsupported under static export.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Dependency notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Two majors are intentionally held back:
+
+- **ESLint stays on 9.** `eslint-config-next` depends on `eslint-plugin-react`,
+  `eslint-plugin-import`, and `eslint-plugin-jsx-a11y`, none of which declare an
+  ESLint 10 peer. Installing ESLint 10 fails with `ERESOLVE`.
+- **TypeScript stays on 5.9.** `typescript-eslint` peers `typescript <6.1.0`, and
+  TypeScript 7 (the Go port) removed the JS Compiler API that `typescript-eslint`
+  relies on. Next.js also rejects TS 7 unless `experimental.useTypeScriptCli` is set.
+
+Revisit when `eslint-plugin-react` ships ESLint 10 support and `typescript-eslint`
+ships a TS 7-compatible major.

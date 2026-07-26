@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -oE '\\\\.divide-y[^{]{0,60}\\\\{[^}]{0,180}\\\\}' /private/tmp/claude-501/-Users-stephen-Projects-pos-app/c78a237d-8ddd-4e15-ac04-63837cb02cdc/scratchpad/baseline-tw3.css)",
+      "Bash(grep -oE '\\\\.shadow\\\\{[^}]{0,200}\\\\}' /private/tmp/claude-501/-Users-stephen-Projects-pos-app/c78a237d-8ddd-4e15-ac04-63837cb02cdc/scratchpad/baseline-tw3.css)"
+    ]
+  }
+}
