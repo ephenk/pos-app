@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, Copy, Check, ArrowLeft } from 'lucide-react';
 
 type Item = {
   name: string;
@@ -25,16 +25,32 @@ const items: Item[] = [
   { name: 'Teh Poci', price: 45000, maxQty: 1 },
 ];
 
+const ACCOUNT_NUMBER = '5270695258';
+
 const roundToTen = (amount: number) => Math.round(amount / 10) * 10;
+const rp = (amount: number) => `Rp ${amount.toLocaleString('id-ID')}`;
+
+const stepperButton =
+  'grid size-11 place-items-center rounded-full border border-stone-300 text-stone-700 transition hover:border-stone-900 hover:text-stone-900 active:scale-95 disabled:opacity-30 disabled:hover:border-stone-300 disabled:active:scale-100';
+
+const eyebrow = 'text-[11px] font-medium uppercase tracking-[0.25em] text-orange-900/70';
 
 export default function POSPage() {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [confirmed, setConfirmed] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleChange = (name: string, delta: number, max: number) => {
     setQuantities((prev) => {
       const newQty = Math.min(Math.max((prev[name] || 0) + delta, 0), max);
       return { ...prev, [name]: newQty };
+    });
+  };
+
+  const copyAccount = () => {
+    navigator.clipboard.writeText(ACCOUNT_NUMBER).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     });
   };
 
@@ -46,97 +62,137 @@ export default function POSPage() {
   const tax = roundToTen((subtotal + gratuity) * 0.1);
   const grandTotal = subtotal + gratuity + tax;
 
-  return (
-    <main className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
-      {!confirmed ? (
-        <div className="w-full max-w-2xl bg-white p-6 rounded-2xl shadow-sm">
-          <h1 className="text-3xl font-bold mb-4 text-center text-black">SATE KHAS SENAYAN MKG</h1>
-          <div className="divide-y divide-gray-200">
-            {items.map((item) => (
-              <div
-                key={item.name}
-                className="flex items-center justify-between py-3"
-              >
-                <div>
-                  <p className="font-medium text-black">{item.name}</p>
-                  <p className="text-sm text-gray-500">
-                    Rp {item.price.toLocaleString()}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <button
-                      className="p-2 bg-teal-500 rounded-full hover:bg-teal-600"
-                      aria-label={`Decrease ${item.name}`}
-                      onClick={() => handleChange(item.name, -1, item.maxQty)}
-                    >
-                      <Minus size={16} />
-                    </button>
-                    <span className="w-6 text-center text-black">
-                      {quantities[item.name] || 0}
-                    </span>
-                    <button
-                      className="p-2 bg-teal-500 rounded-full hover:bg-teal-600"
-                      aria-label={`Increase ${item.name}`}
-                      onClick={() => handleChange(item.name, 1, item.maxQty)}
-                    >
-                      <Plus size={16} />
-                    </button>
-                  </div>
-                  <span className="text-xs text-red-500 whitespace-nowrap">Max: {item.maxQty}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Totals */}
-          <div className="mt-6 border-t border-gray-200 pt-4 space-y-1 text-right text-black">
-            <p>
-              Subtotal: <span className="text-xl">Rp {subtotal.toLocaleString()}</span>
-            </p>
-            <p>
-              Gratuity: <span className="text-xl">Rp {gratuity.toLocaleString()}</span>
-            </p>
-            <p>
-              Tax (10%): <span className="text-xl">Rp {tax.toLocaleString()}</span>
-            </p>
-            <hr className="my-2 border-gray-200" />
-            <p className="text-xl font-bold">
-              Grand Total: Rp {grandTotal.toLocaleString()}
-            </p>
-          </div>
-
+  if (confirmed) {
+    return (
+      <main className="min-h-dvh px-6 py-10 text-stone-900">
+        <div className="mx-auto max-w-md">
           <button
-            className="mt-6 w-full bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition"
-            onClick={() => setConfirmed(true)}
-          >
-            Confirm
-          </button>
-        </div>
-      ) : (
-        <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-sm text-center">
-          <h2 className="text-3xl font-bold mb-6 text-black">
-            Rp {grandTotal.toLocaleString()}
-          </h2>
-          <div className="flex justify-center mb-4">
-            <Image
-              src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg"
-              alt="BCA Logo"
-              width={180}
-              height={80}
-            />
-          </div>
-          <p className="text-lg font-medium text-black">a/n Stephen Hadisurja</p>
-          <p className="text-xl font-bold tracking-wide text-black">5270695258</p>
-
-          <button
-            className="mt-6 text-sm text-blue-600 underline"
+            className="flex min-h-11 items-center gap-2 text-sm text-stone-500 transition hover:text-stone-900"
             onClick={() => setConfirmed(false)}
           >
-            Back to Menu
+            <ArrowLeft size={16} strokeWidth={1.5} /> Back to menu
           </button>
+
+          <div className="mt-10 text-center">
+            <p className={eyebrow}>Total to pay</p>
+            <p className="mt-3 font-display text-5xl font-semibold tabular-nums lining-nums">
+              {rp(grandTotal)}
+            </p>
+          </div>
+
+          <div className="mx-auto my-10 h-px w-16 bg-stone-300" />
+
+          <div className="space-y-6 text-center">
+            <Image
+              className="mx-auto"
+              src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg"
+              alt="BCA"
+              width={120}
+              height={53}
+            />
+            <div>
+              <p className="text-sm text-stone-500">a/n Stephen Hadisurja</p>
+              <p className="mt-2 text-2xl font-light tracking-[0.2em] tabular-nums">
+                {ACCOUNT_NUMBER}
+              </p>
+            </div>
+            <button
+              className="mx-auto flex min-h-11 items-center gap-2 rounded-full border border-stone-300 px-6 text-sm transition hover:border-stone-900"
+              onClick={copyAccount}
+            >
+              {copied ? (
+                <Check size={15} strokeWidth={1.5} className="text-emerald-700" />
+              ) : (
+                <Copy size={15} strokeWidth={1.5} />
+              )}
+              {copied ? 'Copied' : 'Copy account number'}
+            </button>
+          </div>
         </div>
-      )}
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-dvh pb-56 text-stone-900">
+      <header className="px-6 pb-8 pt-12 text-center">
+        <p className={eyebrow}>Bill split</p>
+        <h1 className="mt-3 font-display text-4xl font-semibold">Sate Khas Senayan</h1>
+        <p className="mt-1 text-sm tracking-[0.3em] text-stone-500">MKG</p>
+        <div className="mx-auto mt-8 h-px w-16 bg-stone-300" />
+      </header>
+
+      <ul className="mx-auto max-w-xl divide-y divide-stone-200/70 px-6">
+        {items.map((item) => {
+          const qty = quantities[item.name] || 0;
+          return (
+            <li key={item.name} className="flex items-center justify-between gap-4 py-4">
+              <div className="min-w-0">
+                <p className="font-display text-xl font-medium leading-tight">{item.name}</p>
+                <p className="mt-1 text-sm text-stone-500 tabular-nums">
+                  {rp(item.price)}
+                  <span className="text-stone-400"> · max {item.maxQty}</span>
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center gap-1">
+                <button
+                  className={stepperButton}
+                  aria-label={`Decrease ${item.name}`}
+                  disabled={qty === 0}
+                  onClick={() => handleChange(item.name, -1, item.maxQty)}
+                >
+                  <Minus size={16} strokeWidth={1.5} />
+                </button>
+                <span
+                  className={`w-8 text-center tabular-nums transition-colors ${
+                    qty > 0 ? 'font-semibold text-orange-900' : 'text-stone-300'
+                  }`}
+                  aria-live="polite"
+                >
+                  {qty}
+                </span>
+                <button
+                  className={stepperButton}
+                  aria-label={`Increase ${item.name}`}
+                  disabled={qty === item.maxQty}
+                  onClick={() => handleChange(item.name, 1, item.maxQty)}
+                >
+                  <Plus size={16} strokeWidth={1.5} />
+                </button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* Totals */}
+      <div className="fixed inset-x-0 bottom-0 border-t border-stone-200 bg-paper/90 backdrop-blur-md">
+        <div className="mx-auto max-w-xl px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
+          <dl className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-0.5 text-sm text-stone-500 tabular-nums">
+            <dt>Subtotal</dt>
+            <dd className="text-right">{rp(subtotal)}</dd>
+            <dt>Gratuity</dt>
+            <dd className="text-right">{rp(gratuity)}</dd>
+            <dt>Tax (10%)</dt>
+            <dd className="text-right">{rp(tax)}</dd>
+          </dl>
+          <div className="mt-3 flex items-end justify-between gap-4">
+            <div>
+              <p className={eyebrow}>Grand total</p>
+              <p className="mt-1 font-display text-3xl font-semibold tabular-nums lining-nums">
+                {rp(grandTotal)}
+              </p>
+            </div>
+            <button
+              className="min-h-12 rounded-full bg-stone-900 px-8 text-sm font-medium tracking-wide text-paper transition hover:bg-stone-800 active:scale-95 disabled:bg-stone-200 disabled:text-stone-400 disabled:active:scale-100"
+              disabled={subtotal === 0}
+              onClick={() => setConfirmed(true)}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
     </main>
   );
 }
