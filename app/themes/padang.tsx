@@ -128,14 +128,14 @@ export function PadangView({ settings }: { settings: Settings }) {
       </header>
       <Marawa />
 
-      <ul className="mx-auto mt-4 max-w-xl divide-y divide-amber-200/70 px-4">
+      <ul className="mx-auto mt-4 max-w-xl px-4">
         {settings.items.map((item) => {
           const qty = bill.quantities[item.name] || 0;
           return (
             <li
               key={item.name}
               className={`flex items-center justify-between gap-4 border-l-4 py-4 pl-3 transition-colors ${
-                qty > 0 ? 'border-amber-400' : 'border-transparent'
+                qty > 0 ? 'border-l-amber-400' : 'border-l-transparent'
               }`}
             >
               <div className="min-w-0">
