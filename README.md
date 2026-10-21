@@ -1,9 +1,21 @@
 # pos-app
 
-A single-page bill splitter for Sate Khas Senayan MKG. Tally menu quantities, add
-gratuity and tax, and show BCA transfer details for payment.
+A bill splitter for restaurant dinners. Each diner opens the link, taps what they
+ate, and sees their share with service and tax plus the bank transfer details.
 
-Built with Next.js (App Router) and Tailwind CSS, shipped as a static export.
+Built with Next.js (App Router) and Tailwind CSS, deployed on Netlify.
+
+## How it works
+
+- **Bill page (`/`)** is server-rendered from one settings record in Netlify Blobs:
+  restaurant name, items (with the `maxQty` steppers clamp to), service %, tax %,
+  bank details, and the active theme. With no saved settings it falls back to
+  `defaultSettings` in [`lib/bill.ts`](lib/bill.ts).
+- **Themes** live in [`app/themes/`](app/themes/): `ivory` and `charcoal` are separate
+  views sharing [`use-bill.ts`](app/themes/use-bill.ts) and the totals logic in `lib/bill.ts`.
+- **Admin (`/admin`)** is password-protected. Upload receipt photos and Claude
+  (Sonnet 5.5 via Netlify AI Gateway) reads the items and charges into an editable
+  table. Nothing goes live until you press Save. Photos are not stored.
 
 ## Getting started
 
@@ -12,30 +24,38 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-The whole app lives in [`app/page.tsx`](app/page.tsx) — the menu is a hardcoded
-array at the top of the file, and each item has a `maxQty` the steppers clamp to.
+Open [http://localhost:3000](http://localhost:3000). Plain `next dev` has no Blobs or AI
+Gateway, so the bill page shows the defaults and receipt scanning fails. Use
+[`netlify dev`](https://docs.netlify.com/cli/local-development/) for the real thing.
 
 ## Scripts
 
 | Script | Purpose |
 |---|---|
 | `npm run dev` | Development server |
-| `npm run build` | Static export to `out/` |
+| `npm run build` | Production build |
 | `npm run lint` | ESLint (`next lint` was removed in Next 16) |
 | `npm run typecheck` | `tsc --noEmit` |
+| `npm test` | Totals, validation and receipt-merge checks (`node --test`) |
 
 ## Deployment
 
-Deployed on **Netlify**, which builds from this repo and publishes `out/`.
+Netlify builds from this repo using [`netlify.toml`](netlify.toml) (publish `.next`,
+Next.js runtime applied automatically).
 
-- Build command: `npm run build`
-- Publish directory: `out`
+Set these environment variables on the Netlify site:
 
-`next.config.ts` sets `output: 'export'` for the static build and
-`images.unoptimized: true`, which is required because the default Image
-Optimization loader is unsupported under static export.
+| Variable | Purpose |
+|---|---|
+| `ADMIN_PASSWORD` | Password for `/admin` |
+| `ADMIN_SECRET` | Long random string that signs the 30-day admin cookie. Changing it logs everyone out. |
+
+The AI Gateway injects `ANTHROPIC_API_KEY` itself; don't set one unless you want to
+use your own key.
+
+The site is on Netlify's free plan: 300 credits a month, hard cap. A production
+deploy costs 15; a receipt scan roughly 5. If credits run out, every site on the
+team goes offline until the next cycle.
 
 ## Dependency notes
 
