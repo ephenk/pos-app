@@ -23,6 +23,7 @@ async function shrink(file: File): Promise<Blob> {
 const themes: { value: Theme; label: string }[] = [
   { value: 'ivory', label: 'Ivory (serif, printed menu)' },
   { value: 'charcoal', label: 'Charcoal (dark header, orange)' },
+  { value: 'padang', label: 'Padang (Minang red and gold, gonjong roof)' },
 ];
 
 const input = 'w-full rounded-md border border-stone-300 px-2.5 py-2';

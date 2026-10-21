@@ -4,7 +4,8 @@ export type Item = {
   maxQty: number;
 };
 
-export type Theme = 'charcoal' | 'ivory';
+export const THEMES = ['ivory', 'charcoal', 'padang'] as const;
+export type Theme = (typeof THEMES)[number];
 
 export type BankAccount = { name: string; holder: string; number: string };
 
@@ -87,7 +88,7 @@ export function parseSettings(input: unknown): Settings {
     s.banks.length <= MAX_BANKS &&
     s.banks.every((b) => !!b && isText(b.name, 50) && isText(b.holder, 100) && /^\d{6,20}$/.test(b.number)) &&
     new Set(s.banks.map((b) => b.number)).size === s.banks.length &&
-    (s.theme === 'charcoal' || s.theme === 'ivory');
+    THEMES.includes(s.theme);
   if (!ok) throw new Error('Invalid settings');
   return {
     restaurantName: s.restaurantName.trim(),
