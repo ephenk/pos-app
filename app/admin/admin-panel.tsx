@@ -61,6 +61,7 @@ export function AdminPanel({ initial }: { initial: Settings }) {
         restaurantName: r.restaurantName || d.restaurantName,
         items: r.items,
         servicePct: r.servicePct,
+        serviceLabel: r.serviceLabel,
         taxPct: r.taxPct,
         taxOnService: r.taxOnService,
       }));
@@ -145,7 +146,11 @@ export function AdminPanel({ initial }: { initial: Settings }) {
           <input className={input} value={draft.restaurantName} onChange={(e) => set('restaurantName', e.target.value)} />
         </label>
 
-        <div className="grid grid-cols-2 gap-3 text-sm">
+        <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
+          <label className="col-span-2 sm:col-span-1">
+            Service label
+            <input className={input} value={draft.serviceLabel} onChange={(e) => set('serviceLabel', e.target.value)} />
+          </label>
           <label>
             Service %
             <input

@@ -113,7 +113,7 @@ export function IvoryView({ settings }: { settings: Settings }) {
           <dl className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-0.5 text-sm text-stone-500 tabular-nums">
             <dt>Subtotal</dt>
             <dd className="text-right">{rp(bill.subtotal)}</dd>
-            <dt>Gratuity</dt>
+            <dt>{settings.serviceLabel}</dt>
             <dd className="text-right">{rp(bill.gratuity)}</dd>
             <dt>Tax ({Number(settings.taxPct.toFixed(2))}%)</dt>
             <dd className="text-right">{rp(bill.tax)}</dd>

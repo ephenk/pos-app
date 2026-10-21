@@ -10,6 +10,7 @@ export type Settings = {
   restaurantName: string;
   items: Item[];
   servicePct: number;
+  serviceLabel: string;
   taxPct: number;
   taxOnService: boolean;
   bank: { name: string; holder: string; number: string };
@@ -33,6 +34,7 @@ export const defaultSettings: Settings = {
     { name: 'Teh Poci', price: 45000, maxQty: 1 },
   ],
   servicePct: 100 / 22,
+  serviceLabel: 'Gratuity',
   taxPct: 10,
   taxOnService: true,
   bank: { name: 'BCA', holder: 'Stephen Hadisurja', number: '5270695258' },
@@ -73,6 +75,7 @@ export function parseSettings(input: unknown): Settings {
     s.items.every((i) => !!i && isText(i.name) && isCount(i.price) && isCount(i.maxQty)) &&
     new Set(s.items.map((i) => i.name.trim())).size === s.items.length &&
     isPct(s.servicePct) &&
+    isText(s.serviceLabel, 50) &&
     isPct(s.taxPct) &&
     typeof s.taxOnService === 'boolean' &&
     !!s.bank &&
@@ -85,6 +88,7 @@ export function parseSettings(input: unknown): Settings {
     restaurantName: s.restaurantName.trim(),
     items: s.items.map(({ name, price, maxQty }) => ({ name: name.trim(), price, maxQty })),
     servicePct: s.servicePct,
+    serviceLabel: s.serviceLabel.trim(),
     taxPct: s.taxPct,
     taxOnService: s.taxOnService,
     bank: { name: s.bank.name.trim(), holder: s.bank.holder.trim(), number: s.bank.number },

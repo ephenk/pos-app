@@ -10,6 +10,7 @@ test('parseSettings accepts defaults and rejects bad input', () => {
     { ...defaultSettings, items: [defaultSettings.items[0], defaultSettings.items[0]] },
     { ...defaultSettings, theme: 'neon' },
     { ...defaultSettings, servicePct: '5' },
+    { ...defaultSettings, serviceLabel: '  ' },
   ];
   for (const b of bad) assert.throws(() => parseSettings(b));
 });

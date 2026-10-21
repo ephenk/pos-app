@@ -5,6 +5,7 @@ export type ReceiptDraft = {
   restaurantName: string;
   items: Item[];
   servicePct: number;
+  serviceLabel: string;
   taxPct: number;
   taxOnService: boolean;
   total: number;
@@ -15,6 +16,7 @@ type ReceiptInput = {
   lines: { name: string; qty: number; lineTotal: number }[];
   subtotal: number;
   serviceCharge: number;
+  serviceLabel: string;
   tax: number;
   total: number;
 };
@@ -42,10 +44,15 @@ const RECEIPT_SCHEMA = {
     },
     subtotal: rupiah('Subtotal before service and tax'),
     serviceCharge: rupiah('Service charge amount, 0 if none'),
+    serviceLabel: {
+      type: 'string',
+      description:
+        'Wording printed for the service charge line, without the percentage or amount (e.g. "Service Charge", "Gratuity"). Empty if none.',
+    },
     tax: rupiah('Tax amount (PB1/PPN), 0 if none'),
     total: rupiah('Grand total'),
   },
-  required: ['restaurantName', 'lines', 'subtotal', 'serviceCharge', 'tax', 'total'],
+  required: ['restaurantName', 'lines', 'subtotal', 'serviceCharge', 'serviceLabel', 'tax', 'total'],
 };
 
 const PROMPT = `These photos are parts of one restaurant receipt, in order. Neighbouring photos may overlap.
@@ -102,6 +109,7 @@ export async function readReceipt(images: { mediaType: 'image/jpeg' | 'image/png
         .map((l) => ({ name: l.name.trim(), price: Math.round(l.lineTotal / l.qty), maxQty: l.qty }))
     ),
     servicePct: round4(servicePct),
+    serviceLabel: r.serviceLabel.trim() || 'Service charge',
     taxPct: snapWhole(taxOnService ? taxWithService : taxWithoutService),
     taxOnService,
     total: r.total,
