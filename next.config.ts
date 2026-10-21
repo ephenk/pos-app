@@ -1,12 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
-  images: {
-    // The default Image Optimization loader is unsupported under
-    // `output: 'export'`. Remote images are emitted as-is, so `remotePatterns`
-    // is never consulted and is intentionally omitted.
-    unoptimized: true,
+  experimental: {
+    // Receipt photos are resized client-side to ~300 KB each; Netlify caps
+    // function payloads at ~4.5 MB of binary anyway.
+    serverActions: { bodySizeLimit: "5mb" },
   },
 };
 
