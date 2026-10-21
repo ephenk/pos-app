@@ -9,16 +9,55 @@ const stepperButton =
 
 const eyebrow = 'text-[11px] font-semibold uppercase tracking-[0.3em] text-amber-300';
 
-// Rumah gadang: a saddle roof sweeping up into gonjong horns, over the house body.
+// Rumah gadang: seven gonjong spires, tallest at the ends and leaning outward,
+// stepping down to a small centre gable, over the house body. Gaps are drawn in
+// the header red so each spire reads separately.
+const BASE_Y = 150;
+const W = 370;
+// [left base x, right base x, tip x, tip y] for the left half; mirrored for the right.
+const leftSpires: [number, number, number, number][] = [
+  [4, 150, 52, 2],
+  [62, 190, 100, 32],
+  [112, 212, 142, 58],
+];
+const centre: [number, number, number, number] = [150, 220, 185, 86];
+
+const mirror = ([l, r, tx, ty]: [number, number, number, number]): [number, number, number, number] => [
+  W - r,
+  W - l,
+  W - tx,
+  ty,
+];
+
+// Flared base narrowing to a sharp tip that curls outward, like a buffalo horn.
+const spire = ([l, r, tx, ty]: [number, number, number, number]) => {
+  const lean = Math.sign(tx - W / 2) * 8;
+  return (
+    `M${l} ${BASE_Y} C${l + (tx - l) * 0.45} ${BASE_Y - 30} ${tx - lean} ${ty + 50} ${tx} ${ty} ` +
+    `C${tx - lean} ${ty + 50} ${r - (r - tx) * 0.45} ${BASE_Y - 30} ${r} ${BASE_Y} Z`
+  );
+};
+
+// Back to front: outer spires first so inner ones overlap them.
+const spires = [...leftSpires.flatMap((s) => [s, mirror(s)]), centre];
+const windows = [44, 76, 108, 140, 216, 248, 280, 312];
+
 function Gonjong({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 160 50" aria-hidden="true" className={className}>
-      {/* Roof: a curved band whose ends sweep up into horns. */}
-      <path
-        d="M0 0 C12 22 38 26 50 12 C62 28 98 28 110 12 C122 26 148 22 160 0 C150 32 122 40 110 28 C98 42 62 42 50 28 C38 40 10 32 0 0 Z"
-        fill="currentColor"
-      />
-      <rect x="40" y="39" width="80" height="11" fill="currentColor" opacity="0.55" />
+    <svg viewBox={`0 0 ${W} 200`} aria-hidden="true" className={className}>
+      <g fill="currentColor" className="stroke-red-900" strokeWidth={5} strokeLinejoin="round">
+        {spires.map((s, i) => (
+          <path key={i} d={spire(s)} />
+        ))}
+        <path d={`M24 ${BASE_Y} H${W - 24} L${W - 8} 198 H8 Z`} />
+      </g>
+      <g className="fill-red-900">
+        <rect x="24" y="160" width={W - 48} height="4" />
+        {windows.map((x) => (
+          <rect key={x} x={x} y="170" width="14" height="20" rx="7" />
+        ))}
+        <path d="M172 198 V178 a13 13 0 0 1 26 0 V198 Z" />
+      </g>
     </svg>
   );
 }
@@ -48,7 +87,7 @@ export function PadangView({ settings }: { settings: Settings }) {
 
           <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-amber-200">
             <div className="bg-red-900 px-6 pb-8 pt-6 text-center">
-              <Gonjong className="mx-auto h-7 text-amber-400" />
+              <Gonjong className="mx-auto h-14 text-amber-400" />
               <p className={`mt-3 ${eyebrow}`}>Total to pay</p>
               <p className="mt-2 font-display text-5xl font-semibold text-amber-50 tabular-nums lining-nums">
                 {rp(bill.grandTotal)}
@@ -83,7 +122,7 @@ export function PadangView({ settings }: { settings: Settings }) {
   return (
     <main className="min-h-dvh bg-amber-50 pb-56 text-stone-900">
       <header className="bg-red-900 px-4 pb-8 pt-8 text-center">
-        <Gonjong className="mx-auto h-9 text-amber-400" />
+        <Gonjong className="mx-auto h-20 text-amber-400" />
         <p className={`mt-4 ${eyebrow}`}>Bill split</p>
         <h1 className="mt-2 font-display text-4xl font-semibold text-amber-50">{settings.restaurantName}</h1>
       </header>
