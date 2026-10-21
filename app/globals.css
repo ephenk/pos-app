@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@theme inline {
+  --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
+}
+
+@theme {
+  --color-paper: #faf7f2;
+}
+
 /* v4 gates `hover:` behind @media (hover: hover). This is a POS app that may
    run on a touchscreen, so restore v3 behavior for the +/- and Confirm buttons. */
 @custom-variant hover (&:hover);
