@@ -21,32 +21,31 @@ type ReceiptInput = {
 
 const rupiah = (description: string) => ({ type: 'integer', description });
 
-const tool: Anthropic.Tool = {
-  name: 'record_receipt',
-  description: 'Record the contents of a restaurant receipt.',
-  input_schema: {
-    type: 'object',
-    properties: {
-      restaurantName: { type: 'string', description: 'Restaurant name as printed, including the branch' },
-      lines: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            name: { type: 'string', description: 'Item name as printed' },
-            qty: { type: 'integer' },
-            lineTotal: rupiah('Amount printed for this line (qty × unit price)'),
-          },
-          required: ['name', 'qty', 'lineTotal'],
+// Structured outputs: every object needs `required` + `additionalProperties: false`.
+const RECEIPT_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    restaurantName: { type: 'string', description: 'Restaurant name as printed, including the branch' },
+    lines: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          name: { type: 'string', description: 'Item name as printed' },
+          qty: { type: 'integer' },
+          lineTotal: rupiah('Amount printed for this line (qty × unit price)'),
         },
+        required: ['name', 'qty', 'lineTotal'],
       },
-      subtotal: rupiah('Subtotal before service and tax'),
-      serviceCharge: rupiah('Service charge amount, 0 if none'),
-      tax: rupiah('Tax amount (PB1/PPN), 0 if none'),
-      total: rupiah('Grand total'),
     },
-    required: ['restaurantName', 'lines', 'subtotal', 'serviceCharge', 'tax', 'total'],
+    subtotal: rupiah('Subtotal before service and tax'),
+    serviceCharge: rupiah('Service charge amount, 0 if none'),
+    tax: rupiah('Tax amount (PB1/PPN), 0 if none'),
+    total: rupiah('Grand total'),
   },
+  required: ['restaurantName', 'lines', 'subtotal', 'serviceCharge', 'tax', 'total'],
 };
 
 const PROMPT = `These photos are parts of one restaurant receipt, in order. Neighbouring photos may overlap.
@@ -60,11 +59,13 @@ const offWhole = (n: number) => Math.abs(n - Math.round(n));
 const snapWhole = (n: number) => (offWhole(n) < 0.05 ? Math.round(n) : round4(n));
 
 export async function readReceipt(images: { mediaType: 'image/jpeg' | 'image/png' | 'image/webp'; data: string }[]) {
+  // Sonnet 5.5 rejects forced tool_choice, so use structured outputs (no beta header,
+  // which the Netlify AI Gateway wouldn't forward anyway).
   const message = await new Anthropic().messages.create({
     model: 'claude-sonnet-5-5',
-    max_tokens: 4096,
-    tools: [tool],
-    tool_choice: { type: 'tool', name: tool.name },
+    max_tokens: 16000,
+    // Keeps a multi-photo read well inside Netlify's 60s function limit.
+    output_config: { effort: 'medium', format: { type: 'json_schema', schema: RECEIPT_SCHEMA } },
     messages: [
       {
         role: 'user',
@@ -79,10 +80,12 @@ export async function readReceipt(images: { mediaType: 'image/jpeg' | 'image/png
     ],
   });
 
-  const block = message.content.find((b) => b.type === 'tool_use');
-  if (!block || block.type !== 'tool_use') throw new Error('Could not read the receipt');
-  const r = block.input as ReceiptInput;
-  if (!Array.isArray(r.lines) || !r.subtotal) throw new Error('Could not read the receipt');
+  if (message.stop_reason === 'refusal') throw new Error('The model declined to read these photos');
+  if (message.stop_reason === 'max_tokens') throw new Error('The receipt was too long to read in one go');
+  const text = message.content.find((b) => b.type === 'text');
+  if (!text || text.type !== 'text') throw new Error('No receipt data returned');
+  const r = JSON.parse(text.text) as ReceiptInput;
+  if (!Array.isArray(r.lines) || !r.subtotal) throw new Error('No subtotal found on the receipt');
 
   // Receipts print charges as amounts; work back to percentages. Tax applies on service when
   // that reading gives the rounder percentage (e.g. 10.00% vs 9.55%).
