@@ -39,14 +39,14 @@ Optimization loader is unsupported under static export.
 
 ## Dependency notes
 
-Two majors are intentionally held back:
-
-- **ESLint stays on 9.** `eslint-config-next` depends on `eslint-plugin-react`,
-  `eslint-plugin-import`, and `eslint-plugin-jsx-a11y`, none of which declare an
-  ESLint 10 peer. Installing ESLint 10 fails with `ERESOLVE`.
-- **TypeScript stays on 5.9.** `typescript-eslint` peers `typescript <6.1.0`, and
-  TypeScript 7 (the Go port) removed the JS Compiler API that `typescript-eslint`
-  relies on. Next.js also rejects TS 7 unless `experimental.useTypeScriptCli` is set.
-
-Revisit when `eslint-plugin-react` ships ESLint 10 support and `typescript-eslint`
-ships a TS 7-compatible major.
+- **ESLint 10** works with `eslint-config-next` 16.4, but `eslint-plugin-react`,
+  `eslint-plugin-import`, and `eslint-plugin-jsx-a11y` don't declare an ESLint 10
+  peer yet, so `npm install` prints `ERESOLVE overriding peer dependency` warnings.
+  Lint runs clean regardless.
+- **TypeScript stays on 6.** TypeScript 7 (the Go port) removed the JS Compiler API
+  that `typescript-eslint` relies on; `npm run lint` fails with
+  `typescript-eslint does not support TS 7.0`. Revisit when `typescript-eslint`
+  ships TS 7 support.
+- **`npm audit` reports `braces`** via `eslint-config-next` → `fast-glob` →
+  `micromatch`. It's lint tooling only, never shipped. `npm audit fix --force`
+  would downgrade `eslint-config-next` to 14, so it's left until Next updates it.
