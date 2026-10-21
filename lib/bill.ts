@@ -4,7 +4,7 @@ export type Item = {
   maxQty: number;
 };
 
-export const THEMES = ['ivory', 'charcoal', 'padang'] as const;
+export const THEMES = ['ivory', 'charcoal', 'padang', 'japanese', 'chinese'] as const;
 export type Theme = (typeof THEMES)[number];
 
 export type BankAccount = { name: string; holder: string; number: string };
