@@ -5,7 +5,9 @@ import { computeTotals, defaultSettings, mergeItems, parseSettings } from './bil
 test('parseSettings accepts defaults and rejects bad input', () => {
   assert.deepEqual(parseSettings(defaultSettings), defaultSettings);
   const bad = [
-    { ...defaultSettings, bank: { ...defaultSettings.bank, number: '52706-95258' } },
+    { ...defaultSettings, banks: [{ ...defaultSettings.banks[0], number: '52706-95258' }] },
+    { ...defaultSettings, banks: [] },
+    { ...defaultSettings, banks: [defaultSettings.banks[0], defaultSettings.banks[0]] },
     { ...defaultSettings, items: [{ name: 'A', price: -1, maxQty: 1 }] },
     { ...defaultSettings, items: [defaultSettings.items[0], defaultSettings.items[0]] },
     { ...defaultSettings, theme: 'neon' },

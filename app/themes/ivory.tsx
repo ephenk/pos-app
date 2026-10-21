@@ -11,7 +11,6 @@ const eyebrow = 'text-[11px] font-medium uppercase tracking-[0.25em] text-orange
 
 export function IvoryView({ settings }: { settings: Settings }) {
   const bill = useBill(settings);
-  const { bank } = settings;
 
   if (bill.confirmed) {
     return (
@@ -33,24 +32,28 @@ export function IvoryView({ settings }: { settings: Settings }) {
 
           <div className="mx-auto my-10 h-px w-16 bg-stone-300" />
 
-          <div className="space-y-6 text-center">
-            <p className="font-display text-3xl font-semibold tracking-wide">{bank.name}</p>
-            <div>
-              <p className="text-sm text-stone-500">a/n {bank.holder}</p>
-              <p className="mt-2 text-2xl font-light tracking-[0.2em] tabular-nums">{bank.number}</p>
-            </div>
-            <button
-              className="mx-auto flex min-h-11 items-center gap-2 rounded-full border border-stone-300 px-6 text-sm transition hover:border-stone-900"
-              onClick={bill.copyAccount}
-            >
-              {bill.copied ? (
-                <Check size={15} strokeWidth={1.5} className="text-emerald-700" />
-              ) : (
-                <Copy size={15} strokeWidth={1.5} />
-              )}
-              {bill.copied ? 'Copied' : 'Copy account number'}
-            </button>
-          </div>
+          <ul className="divide-y divide-stone-200/70">
+            {settings.banks.map((bank) => (
+              <li key={bank.number} className="space-y-6 py-8 text-center first:pt-0">
+                <p className="font-display text-3xl font-semibold tracking-wide">{bank.name}</p>
+                <div>
+                  <p className="text-sm text-stone-500">a/n {bank.holder}</p>
+                  <p className="mt-2 text-2xl font-light tracking-[0.2em] tabular-nums">{bank.number}</p>
+                </div>
+                <button
+                  className="mx-auto flex min-h-11 items-center gap-2 rounded-full border border-stone-300 px-6 text-sm transition hover:border-stone-900"
+                  onClick={() => bill.copyAccount(bank.number)}
+                >
+                  {bill.copied === bank.number ? (
+                    <Check size={15} strokeWidth={1.5} className="text-emerald-700" />
+                  ) : (
+                    <Copy size={15} strokeWidth={1.5} />
+                  )}
+                  {bill.copied === bank.number ? 'Copied' : 'Copy account number'}
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       </main>
     );

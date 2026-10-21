@@ -28,7 +28,7 @@ export async function save(settings: unknown): Promise<{ error?: string }> {
   } catch {
     return {
       error:
-        'Check the form: every item needs a unique name, a price and a quantity above 0, and the account number must be digits only.',
+        'Check the form: every item needs a unique name, a price and a quantity above 0, and each bank account needs all fields, a digits-only number, and no duplicates.',
     };
   }
   await saveSettings(parsed);

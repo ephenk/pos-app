@@ -6,6 +6,10 @@ export type Item = {
 
 export type Theme = 'charcoal' | 'ivory';
 
+export type BankAccount = { name: string; holder: string; number: string };
+
+export const MAX_BANKS = 5;
+
 export type Settings = {
   restaurantName: string;
   items: Item[];
@@ -13,7 +17,7 @@ export type Settings = {
   serviceLabel: string;
   taxPct: number;
   taxOnService: boolean;
-  bank: { name: string; holder: string; number: string };
+  banks: BankAccount[];
   theme: Theme;
 };
 
@@ -37,7 +41,7 @@ export const defaultSettings: Settings = {
   serviceLabel: 'Gratuity',
   taxPct: 10,
   taxOnService: true,
-  bank: { name: 'BCA', holder: 'Stephen Hadisurja', number: '5270695258' },
+  banks: [{ name: 'BCA', holder: 'Stephen Hadisurja', number: '5270695258' }],
   theme: 'ivory',
 };
 
@@ -78,10 +82,11 @@ export function parseSettings(input: unknown): Settings {
     isText(s.serviceLabel, 50) &&
     isPct(s.taxPct) &&
     typeof s.taxOnService === 'boolean' &&
-    !!s.bank &&
-    isText(s.bank.name, 50) &&
-    isText(s.bank.holder, 100) &&
-    /^\d{6,20}$/.test(s.bank.number) &&
+    Array.isArray(s.banks) &&
+    s.banks.length > 0 &&
+    s.banks.length <= MAX_BANKS &&
+    s.banks.every((b) => !!b && isText(b.name, 50) && isText(b.holder, 100) && /^\d{6,20}$/.test(b.number)) &&
+    new Set(s.banks.map((b) => b.number)).size === s.banks.length &&
     (s.theme === 'charcoal' || s.theme === 'ivory');
   if (!ok) throw new Error('Invalid settings');
   return {
@@ -91,7 +96,7 @@ export function parseSettings(input: unknown): Settings {
     serviceLabel: s.serviceLabel.trim(),
     taxPct: s.taxPct,
     taxOnService: s.taxOnService,
-    bank: { name: s.bank.name.trim(), holder: s.bank.holder.trim(), number: s.bank.number },
+    banks: s.banks.map((b) => ({ name: b.name.trim(), holder: b.holder.trim(), number: b.number })),
     theme: s.theme,
   };
 }

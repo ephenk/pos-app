@@ -4,7 +4,7 @@ import { computeTotals, type Item, type Settings } from '@/lib/bill';
 export function useBill(settings: Settings) {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [confirmed, setConfirmed] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
 
   const change = (item: Item, delta: number) => {
     setQuantities((prev) => {
@@ -13,10 +13,10 @@ export function useBill(settings: Settings) {
     });
   };
 
-  const copyAccount = () => {
-    navigator.clipboard.writeText(settings.bank.number).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+  const copyAccount = (number: string) => {
+    navigator.clipboard.writeText(number).then(() => {
+      setCopied(number);
+      setTimeout(() => setCopied((c) => (c === number ? null : c)), 2000);
     });
   };
 

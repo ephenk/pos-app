@@ -9,7 +9,6 @@ const stepperButton =
 
 export function CharcoalView({ settings }: { settings: Settings }) {
   const bill = useBill(settings);
-  const { bank } = settings;
 
   if (bill.confirmed) {
     return (
@@ -28,20 +27,24 @@ export function CharcoalView({ settings }: { settings: Settings }) {
               <p className="mt-2 text-4xl font-bold tabular-nums">{rp(bill.grandTotal)}</p>
             </div>
 
-            <div className="space-y-5 px-6 py-8 text-center">
-              <p className="text-3xl font-extrabold tracking-wide">{bank.name}</p>
-              <div>
-                <p className="text-sm text-stone-500">a/n {bank.holder}</p>
-                <p className="mt-1 text-3xl font-bold tracking-wider tabular-nums">{bank.number}</p>
-              </div>
-              <button
-                className="mx-auto flex min-h-11 items-center gap-2 rounded-full border border-stone-300 px-5 text-sm font-semibold transition hover:bg-stone-100"
-                onClick={bill.copyAccount}
-              >
-                {bill.copied ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
-                {bill.copied ? 'Copied' : 'Copy account number'}
-              </button>
-            </div>
+            <ul className="divide-y divide-stone-100">
+              {settings.banks.map((bank) => (
+                <li key={bank.number} className="space-y-5 px-6 py-8 text-center">
+                  <p className="text-3xl font-extrabold tracking-wide">{bank.name}</p>
+                  <div>
+                    <p className="text-sm text-stone-500">a/n {bank.holder}</p>
+                    <p className="mt-1 text-3xl font-bold tracking-wider tabular-nums">{bank.number}</p>
+                  </div>
+                  <button
+                    className="mx-auto flex min-h-11 items-center gap-2 rounded-full border border-stone-300 px-5 text-sm font-semibold transition hover:bg-stone-100"
+                    onClick={() => bill.copyAccount(bank.number)}
+                  >
+                    {bill.copied === bank.number ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
+                    {bill.copied === bank.number ? 'Copied' : 'Copy account number'}
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </main>

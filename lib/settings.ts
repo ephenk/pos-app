@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { getStore } from '@netlify/blobs';
-import { defaultSettings, type Settings } from './bill';
+import { defaultSettings, type BankAccount, type Settings } from './bill';
 
 const KEY = 'current';
 
@@ -19,8 +19,13 @@ const store = () => getStore({ name: 'settings', consistency: 'strong', fetch: b
 
 export const getSettings = cache(async (): Promise<Settings> => {
   try {
-    const saved = (await store().get(KEY, { type: 'json' })) as Partial<Settings> | null;
-    return saved ? { ...defaultSettings, ...saved } : defaultSettings;
+    const saved = (await store().get(KEY, { type: 'json' })) as
+      | (Partial<Settings> & { bank?: BankAccount })
+      | null;
+    if (!saved) return defaultSettings;
+    // Settings saved before multiple accounts held a single `bank`.
+    const { bank, ...rest } = saved;
+    return { ...defaultSettings, ...rest, banks: saved.banks ?? (bank ? [bank] : defaultSettings.banks) };
   } catch (error) {
     // No Blobs context under plain `next dev`; use `netlify dev` to read real settings.
     console.error('Reading settings failed, using defaults:', error);

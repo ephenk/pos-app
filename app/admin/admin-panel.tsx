@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
-import { computeTotals, rp, type Item, type Settings, type Theme } from '@/lib/bill';
+import { computeTotals, MAX_BANKS, rp, type BankAccount, type Item, type Settings, type Theme } from '@/lib/bill';
 import { logout, save, scanReceipt } from './actions';
 
 const MAX_SIDE = 1600;
@@ -39,6 +39,8 @@ export function AdminPanel({ initial }: { initial: Settings }) {
     setDraft((d) => ({ ...d, [key]: value }));
   const setItem = (index: number, patch: Partial<Item>) =>
     set('items', draft.items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  const setBank = (index: number, patch: Partial<BankAccount>) =>
+    set('banks', draft.banks.map((bank, i) => (i === index ? { ...bank, ...patch } : bank)));
 
   const fullBill = computeTotals(draft, Object.fromEntries(draft.items.map((i) => [i.name, i.maxQty])));
   const mismatch = receiptTotal !== null ? fullBill.grandTotal - receiptTotal : 0;
@@ -75,11 +77,9 @@ export function AdminPanel({ initial }: { initial: Settings }) {
   };
 
   const onSave = async () => {
-    const { bank } = draft;
-    const bankChanged = JSON.stringify(bank) !== JSON.stringify(saved.bank);
-    if (bankChanged && !confirm(`Payments will go to:\n\n${bank.name} ${bank.number}\na/n ${bank.holder}\n\nSave?`)) {
-      return;
-    }
+    const banksChanged = JSON.stringify(draft.banks) !== JSON.stringify(saved.banks);
+    const accounts = draft.banks.map((b) => `${b.name} ${b.number}\na/n ${b.holder}`).join('\n\n');
+    if (banksChanged && !confirm(`Payments will go to:\n\n${accounts}\n\nSave?`)) return;
     setBusy('save');
     setMessage(null);
     try {
@@ -244,26 +244,45 @@ export function AdminPanel({ initial }: { initial: Settings }) {
       </section>
 
       <section className={section}>
-        <h2 className="font-semibold">Bank account</h2>
-        <div className="grid gap-3 text-sm sm:grid-cols-3">
-          <label>
-            Bank
-            <input className={input} value={draft.bank.name} onChange={(e) => set('bank', { ...draft.bank, name: e.target.value })} />
-          </label>
-          <label>
-            Account holder
-            <input className={input} value={draft.bank.holder} onChange={(e) => set('bank', { ...draft.bank, holder: e.target.value })} />
-          </label>
-          <label>
-            Account number
-            <input
-              className={input}
-              inputMode="numeric"
-              value={draft.bank.number}
-              onChange={(e) => set('bank', { ...draft.bank, number: e.target.value.replace(/\D/g, '') })}
-            />
-          </label>
-        </div>
+        <h2 className="font-semibold">Bank accounts</h2>
+        <p className="text-sm text-stone-500">All accounts are shown on the payment screen.</p>
+        {draft.banks.map((bank, i) => (
+          <div key={i} className="grid grid-cols-[1fr_auto] gap-3 border-t border-stone-100 pt-3 text-sm first-of-type:border-0 first-of-type:pt-0 sm:grid-cols-[1fr_1fr_1fr_auto]">
+            <label className="col-span-2 sm:col-span-1">
+              Bank
+              <input className={input} value={bank.name} onChange={(e) => setBank(i, { name: e.target.value })} />
+            </label>
+            <label className="col-span-2 sm:col-span-1">
+              Account holder
+              <input className={input} value={bank.holder} onChange={(e) => setBank(i, { holder: e.target.value })} />
+            </label>
+            <label>
+              Account number
+              <input
+                className={input}
+                inputMode="numeric"
+                value={bank.number}
+                onChange={(e) => setBank(i, { number: e.target.value.replace(/\D/g, '') })}
+              />
+            </label>
+            <button
+              aria-label={`Remove ${bank.name || 'account'}`}
+              className="self-end p-2 text-stone-400 hover:text-red-600 disabled:opacity-30"
+              disabled={draft.banks.length === 1}
+              onClick={() => set('banks', draft.banks.filter((_, j) => j !== i))}
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+        ))}
+        {draft.banks.length < MAX_BANKS && (
+          <button
+            className="text-sm text-stone-600 underline"
+            onClick={() => set('banks', [...draft.banks, { name: '', holder: '', number: '' }])}
+          >
+            Add account
+          </button>
+        )}
       </section>
 
       <div className="fixed inset-x-0 bottom-0 border-t border-stone-200 bg-white/95 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
