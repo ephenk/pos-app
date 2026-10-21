@@ -6,6 +6,10 @@
 
 @theme {
   --color-paper: #faf7f2;
+  /* Japanese theme: washi paper, vermilion (shu), indigo (ai) */
+  --color-washi: #f5efe3;
+  --color-shu: #c8402f;
+  --color-ai: #1f3352;
 }
 
 /* v4 gates `hover:` behind @media (hover: hover). This is a POS app that may

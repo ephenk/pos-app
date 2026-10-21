@@ -24,6 +24,8 @@ const themes: { value: Theme; label: string }[] = [
   { value: 'ivory', label: 'Ivory (serif, printed menu)' },
   { value: 'charcoal', label: 'Charcoal (dark header, orange)' },
   { value: 'padang', label: 'Padang (Minang red and gold, gonjong roof)' },
+  { value: 'japanese', label: 'Japanese (washi, vermilion torii, indigo waves)' },
+  { value: 'chinese', label: 'Chinese (imperial red, gold lantern, key-fret border)' },
 ];
 
 const input = 'w-full rounded-md border border-stone-300 px-2.5 py-2';

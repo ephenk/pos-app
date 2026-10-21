@@ -1,10 +1,18 @@
 import type { Metadata } from 'next';
 import { getSettings } from '@/lib/settings';
 import { CharcoalView } from './themes/charcoal';
+import { ChineseView } from './themes/chinese';
 import { IvoryView } from './themes/ivory';
+import { JapaneseView } from './themes/japanese';
 import { PadangView } from './themes/padang';
 
-const views = { ivory: IvoryView, charcoal: CharcoalView, padang: PadangView };
+const views = {
+  ivory: IvoryView,
+  charcoal: CharcoalView,
+  padang: PadangView,
+  japanese: JapaneseView,
+  chinese: ChineseView,
+};
 
 export const dynamic = 'force-dynamic';
 
