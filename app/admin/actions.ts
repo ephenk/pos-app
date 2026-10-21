@@ -53,6 +53,7 @@ export async function scanReceipt(
     return { draft: await readReceipt(images) };
   } catch (error) {
     console.error('Reading receipt failed:', error);
-    return { error: 'Could not read the receipt. Try clearer photos, or edit the items by hand.' };
+    const detail = error instanceof Error ? error.message.slice(0, 200) : String(error);
+    return { error: `Could not read the receipt (${detail}). Try clearer photos, or edit the items by hand.` };
   }
 }
